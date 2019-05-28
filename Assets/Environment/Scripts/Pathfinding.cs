@@ -6,20 +6,38 @@ using UnityEngine;
 public class Nodo
 {
     public Vector3 position = Vector3.zero;
-    public float cost = 0;
+    public float cost     = 0;
     public float distance = 0;
     public float priority
-    { get
-        {
-            return cost + distance;
-        }
+    {
+        get { return cost + distance; }
     }
 
-    public Nodo(Vector3 p_position, float p_cost, float p_distance)
+    public Nodo padre;
+
+    public Nodo(Vector3 p_position, float p_cost, float p_distance, Nodo p_padre)
     {
         this.position = p_position;
-        this.cost = p_cost;
+        this.cost     = p_cost;
         this.distance = p_distance;
+        this.padre    = p_padre;
+    }
+
+    public bool Meta(Vector3 goal)
+    {
+        if (this.position == goal)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public float FStar(float _distance)
+    {
+        var hStar = distance;
+
+        return cost + hStar;
+        
     }
 }
 
@@ -39,7 +57,8 @@ public class Pathfinding : MonoBehaviour {
     }
 	
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
 		
 	}
 
@@ -49,14 +68,34 @@ public class Pathfinding : MonoBehaviour {
         virtualAgent.transform.position = initialPosition;
         destination = goal;
 
-        var nodoStart = new Nodo(initialPosition, 0, Vector3.Distance(destination, initialPosition));
+        var nodoStart = new Nodo(initialPosition, 0, Vector3.Distance(destination, initialPosition), null);
 
         GetFrontiers(nodoStart);
+
         while (frontiers.Count > 0)
         {
+            /// Extraemos la primera posición
+            var nodo = frontiers[0];
+            frontiers.RemoveAt(0);
 
+            /// Comprobamos si es nodo meta
+
+            if (nodo.Meta(destination))
+            {
+                return frontiers;
+            }
+
+            /// Comprobar si tienen padre, en caso contrario lo añadimos a la lista
+            /// 
+            foreach (var c in frontiers)
+            {
+
+                if (c != nodo.padre)
+                {
+                    ordInsertar(c, frontiers, c.FStar(c.cost));
+                }
+            }
         }
-
         return null;
     }
 
@@ -104,10 +143,39 @@ public class Pathfinding : MonoBehaviour {
         {
             if (hit.collider.tag == "Ground")
             {
-                var nodo = new Nodo(hit.point, currentNodo.cost + 1, Vector3.Distance(hit.point, destination));
+                var nodo = new Nodo(hit.point, currentNodo.cost + 1, Vector3.Distance(hit.point, destination), null);
                 frontiers.Add(nodo);
             }
         }
+    }
+
+    public void ordInsertar(Nodo n, List<Nodo> a, float coste)
+    {
+        for (var i = 0; i < frontiers.Count; i++)
+        {
+            if (frontiers[i].FStar(n.cost) > coste)
+            {
+                frontiers.Insert(i, n);
+                break;
+            }
+        }
+        if (frontiers.Count == 0) frontiers.Add(n);
+    }
+
+    public List<Nodo> RecorrerPadres(Nodo last)
+    {
+        var closed = new List<Nodo>();
+
+        while (last.padre != null)
+        {
+            /// Nodo del que viene
+            //closed.Add(last.)
+            last = last.padre;
+        }
+
+        closed.Reverse();
+
+        return null;
     }
 }
 
