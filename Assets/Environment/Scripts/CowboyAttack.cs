@@ -35,8 +35,8 @@ public class CowboyAttack : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
-        decider = GetComponent<CowboyDecider>();
-        fireSound = GetComponent<AudioSource>();
+        decider   = GetComponent<CowboyDecider>();
+        fireSound = GetComponent<AudioSource  >();
     }
 	
 	// Update is called once per frame

@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4821252789083258}
   - component: {fileID: 114445403184177296}
   - component: {fileID: 114687576754380904}
+  - component: {fileID: 114488232293730928}
   m_Layer: 0
   m_Name: Mind
   m_TagString: Untagged
@@ -156,7 +157,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 741a1aa77daf00649984ca2431632fe1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Target: {fileID: 0}
+  rotVel: 90
+  patrolPoints: []
+--- !u!114 &114488232293730928
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1078512046875008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4297845581f5f544b326b16a217e3a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  frontiers: []
 --- !u!114 &114687576754380904
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -168,6 +182,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 945a855b630f909489b8641b177bd2b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  visionRange: 20
+  visionAngle: 10
+  currentState: 0
 --- !u!136 &136081764764344840
 CapsuleCollider:
   m_ObjectHideFlags: 1

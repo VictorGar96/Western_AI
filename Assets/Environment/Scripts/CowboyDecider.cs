@@ -59,6 +59,8 @@ public class CowboyDecider : MonoBehaviour {
 
     //float playerH;
     //float playerMaxH;
+
+    Pathfinding path;
     
     #endregion
 
@@ -73,9 +75,12 @@ public class CowboyDecider : MonoBehaviour {
         locomotion   = GetComponent<CowboyLocomotion>();
         myTransform  = GetComponent<Transform       >();
         cowboyAttack = GetComponent<CowboyAttack    >();
+        path         = GetComponent<Pathfinding     >();
 
         //playerH    = gameObject.GetComponent<Health>().getCurrentHealth();
         //playerMaxH = gameObject.GetComponent<Health>().maxHealth;
+
+        path.CalcularRuta(transform.position, target.position);
 
     }
 
@@ -84,7 +89,7 @@ public class CowboyDecider : MonoBehaviour {
         // Llamamos a la función Decide();
         Decide();
 
-        // Obtenemos la distancia al jugador para comprobar si esta en rango de tiro.
+        /// Obtenemos la distancia al jugador para comprobar si esta en rango de tiro.
         distanceToPlayer = Vector3.Distance(target.position, myTransform.position);
 
         //playerHealth.healthBar.fillAmount = playerMaxH / playerH;
@@ -104,7 +109,6 @@ public class CowboyDecider : MonoBehaviour {
                 break;
             case stateAI.wander:
                 Wander();
-
                 break;
             case stateAI.runaway:
                 break;
@@ -176,10 +180,6 @@ public class CowboyDecider : MonoBehaviour {
             StopCoroutine(attacking);                        
         }
     }
-
-
-
-    
 
     float VisionAngle(out string tag)
     {

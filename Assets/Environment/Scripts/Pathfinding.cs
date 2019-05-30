@@ -2,12 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
+[Serializable]
 public class Nodo
 {
+    const float MIN_DISTANCE = 0.5F; /// TODO: aumentar
+
     public Vector3 position = Vector3.zero;
-    public float cost     = 0;
-    public float distance = 0;
+    public float cost       = 0;
+    public float distance   = 0;
+
     public float priority
     {
         get { return cost + distance; }
@@ -18,20 +23,30 @@ public class Nodo
     public Nodo(Vector3 p_position, float p_cost, float p_distance, Nodo p_padre)
     {
         this.position = p_position;
-        this.cost     = p_cost;
+        this.cost     =     p_cost;
         this.distance = p_distance;
-        this.padre    = p_padre;
+        this.padre    =    p_padre;
     }
 
-    public bool Meta(Vector3 goal)
+    /// <summary>
+    /// Calcular que un nodo es meta o si es igual a otro.
+    /// </summary>
+    /// <param name="goal"></param>
+    /// <returns></returns>
+    public bool EsIgual(Vector3 goal)
     {
-        if (this.position == goal)
+        if (Vector3.Distance(position, goal) < MIN_DISTANCE)//TODO: distance
         {
             return true;
         }
         return false;
     }
 
+    /// <summary>
+    ///  Calcular el coste mediante la posición actual y el goal 
+    /// </summary>
+    /// <param name="_distance"></param>
+    /// <returns></returns>
     public float FStar(float _distance)
     {
         var hStar = distance;
@@ -43,17 +58,16 @@ public class Nodo
 
 public class Pathfinding : MonoBehaviour {
 
-    Vector3 destination  = Vector3.zero;
-    List<Nodo> frontiers = new List<Nodo>();
-    List<Nodo> comeFrom  = new List<Nodo>();
+    Vector3 destination         = Vector3.zero;
+    public List<Nodo> frontiers = new List<Nodo>();
+           List<Nodo> path      = new List<Nodo>();
 
     GameObject virtualAgent;
 
     // Use this for initialization
     void Start ()
     {
-        virtualAgent = new GameObject("Virtual Agent");
-
+        virtualAgent = GameObject.CreatePrimitive(PrimitiveType.Sphere);
     }
 	
 	// Update is called once per frame
@@ -64,39 +78,54 @@ public class Pathfinding : MonoBehaviour {
 
     public List<Nodo> CalcularRuta(Vector3 initialPosition, Vector3 goal)
     {
+        StartCoroutine(Test(initialPosition, goal));
 
+        return null;
+    }
+
+    IEnumerator Test(Vector3 initialPosition, Vector3 goal)
+    {
+        /// Inicializamos la posición inicial a la posición del agente 
         virtualAgent.transform.position = initialPosition;
         destination = goal;
 
-        var nodoStart = new Nodo(initialPosition, 0, Vector3.Distance(destination, initialPosition), null);
+        /// Creamos una variable tipo nodo temporal al cual le asignamos initial position
+        /// padre de nodoStart = null
+        Nodo nodoStart = new Nodo(initialPosition, 0, Vector3.Distance(destination, initialPosition), null);
 
+        /// Llamamos a la función GetFrontiers() pasandole nodoStart
+        /// Desde GetFrontiers() lanzamos los raycast llamando a la función ThrowRayCast()
         GetFrontiers(nodoStart);
 
         while (frontiers.Count > 0)
         {
             /// Extraemos la primera posición
-            var nodo = frontiers[0];
+            Nodo nodo = frontiers[0];
             frontiers.RemoveAt(0);
 
-            /// Comprobamos si es nodo meta
+            //Agente para debug
+            virtualAgent.transform.position = nodo.position;
 
-            if (nodo.Meta(destination))
+            /// Comprobamos si es nodo META!!
+            if (nodo.EsIgual(destination))
             {
-                return frontiers;
+                Debug.Log("Hemos llegado!");
+                //Devolvemos la lista de los padres que forman la ruta. 
+                //return RecorrerPadres(nodo);
             }
+            path = RecorrerPadres(nodo);
 
-            /// Comprobar si tienen padre, en caso contrario lo añadimos a la lista
+            /// Buscamos las nuevas fronteras del nodo actual
             /// 
-            foreach (var c in frontiers)
-            {
+            GetFrontiers(nodo);
 
-                if (c != nodo.padre)
-                {
-                    ordInsertar(c, frontiers, c.FStar(c.cost));
-                }
-            }
+            Debug.Log("Nodos: " + frontiers.Count);
+
+            Debug.Break();
+
+            yield return null;
         }
-        return null;
+        yield return null;
     }
 
     private void GetFrontiers(Nodo current)
@@ -133,49 +162,82 @@ public class Pathfinding : MonoBehaviour {
         rayDirection = Vector3.down + (Vector3.forward + Vector3.left);
         ThrowRayCast(rayDirection, current);
 
+        /// Ordenamos la lista por su priority (coste + distancia)
+        frontiers = frontiers.OrderBy(nodo => nodo.priority).ToList();
     }
 
+
+    /// <summary>
+    /// Lanza los rayos y si chocan con el suelo los añade a la lista frontiers
+    /// </summary>
+    /// <param name="direction"></param>
+    /// <param name="currentNodo"></param>
     private void ThrowRayCast(Vector3 direction, Nodo currentNodo)
     {
         RaycastHit hit;
 
-        if (Physics.Raycast(currentNodo.position + (Vector3.up * 2f), direction, out hit))
+        Debug.DrawRay(currentNodo.position + (Vector3.up * 1f), direction*5, Color.blue);
+
+        if (Physics.Raycast(currentNodo.position + (Vector3.up * 1f), direction, out hit))
         {
             if (hit.collider.tag == "Ground")
             {
-                var nodo = new Nodo(hit.point, currentNodo.cost + 1, Vector3.Distance(hit.point, destination), null);
-                frontiers.Add(nodo);
+                //Creamos cada uno de los 8 posibles nodos de dirección
+                Nodo nodo = new Nodo(hit.point, currentNodo.cost + 1, Vector3.Distance(hit.point, destination), currentNodo);
+
+                ///TODO:
+                ///1) Aumentar la distancia de llegada y comprobar si se lanza el log de "llegado!"
+                ///2) Crear un sistem de comprobación, que solo añada el nodo si no está en frontiers ni en el path
+                ///3) Quitar la corrutina y devolver la ruta 
+                ///4) sustituir el sistema antiguo por este. 
+                
+                /// Si el nodo actual es el primerono o el nuevo nodo es distinto al nodo padre, lo añadimos como nuevo camino posible
+                if (currentNodo.padre == null || !nodo.EsIgual(currentNodo.padre.position))
+                {
+                    frontiers.Add(nodo);
+                }
             }
         }
     }
 
+    /*
     public void ordInsertar(Nodo n, List<Nodo> a, float coste)
     {
-        for (var i = 0; i < frontiers.Count; i++)
-        {
-            if (frontiers[i].FStar(n.cost) > coste)
-            {
-                frontiers.Insert(i, n);
-                break;
-            }
-        }
-        if (frontiers.Count == 0) frontiers.Add(n);
-    }
 
+        //frontiers.OrderBy(nodo => nodo.priority);
+
+        //for (var i = 0; i < frontiers.Count; i++)
+        //{
+        //    if (frontiers[i].priority > coste)
+        //    {
+        //        frontiers.Insert(i, n);
+        //        break;
+        //    }
+        //}
+        //if (frontiers.Count == 0) frontiers.Add(n);
+    }
+    */
+
+    /// <summary>
+    /// Recorrer los padres para calcular la ruta.
+    /// Hacer un reverse de la lista.
+    /// </summary>
+    /// <param name="last"></param>
+    /// <returns></returns>
     public List<Nodo> RecorrerPadres(Nodo last)
     {
-        var closed = new List<Nodo>();
+        var comeFrom = new List<Nodo>();
 
         while (last.padre != null)
         {
+            comeFrom.Add(last);
             /// Nodo del que viene
-            //closed.Add(last.)
             last = last.padre;
         }
 
-        closed.Reverse();
+        comeFrom.Reverse();
 
-        return null;
+        return comeFrom;
     }
 }
 
