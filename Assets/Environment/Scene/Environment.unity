@@ -1043,6 +1043,16 @@ Prefab:
       propertyPath: rotVel
       value: 30
       objectReference: {fileID: 0}
+    - target: {fileID: 114445403184177296, guid: a6c6fa1a741f1e344a3c3a23c5ffcd5c,
+        type: 2}
+      propertyPath: movVel
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 195055576012678332, guid: a6c6fa1a741f1e344a3c3a23c5ffcd5c,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a6c6fa1a741f1e344a3c3a23c5ffcd5c, type: 2}
   m_IsPrefabAsset: 0
@@ -3546,7 +3556,7 @@ Prefab:
       objectReference: {fileID: 489108582}
     - target: {fileID: 1111899110652344, guid: a6c6fa1a741f1e344a3c3a23c5ffcd5c, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 195055576012678332, guid: a6c6fa1a741f1e344a3c3a23c5ffcd5c,
         type: 2}
@@ -3562,6 +3572,11 @@ Prefab:
         type: 2}
       propertyPath: visionRange
       value: 24.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 195055576012678332, guid: a6c6fa1a741f1e344a3c3a23c5ffcd5c,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a6c6fa1a741f1e344a3c3a23c5ffcd5c, type: 2}
@@ -4709,7 +4724,7 @@ Prefab:
       objectReference: {fileID: 1554726620}
     - target: {fileID: 1111899110652344, guid: a6c6fa1a741f1e344a3c3a23c5ffcd5c, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 195055576012678332, guid: a6c6fa1a741f1e344a3c3a23c5ffcd5c,
         type: 2}
@@ -4730,6 +4745,11 @@ Prefab:
         type: 2}
       propertyPath: m_AutoBraking
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 195055576012678332, guid: a6c6fa1a741f1e344a3c3a23c5ffcd5c,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a6c6fa1a741f1e344a3c3a23c5ffcd5c, type: 2}
@@ -5419,6 +5439,10 @@ Prefab:
     - target: {fileID: 1648953576942058, guid: 1591e8e94d4f2654bbfc7a4ec894e992, type: 2}
       propertyPath: m_TagString
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 1669978298125270, guid: 1591e8e94d4f2654bbfc7a4ec894e992, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1591e8e94d4f2654bbfc7a4ec894e992, type: 2}

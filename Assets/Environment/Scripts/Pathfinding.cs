@@ -7,7 +7,7 @@ using System.Linq;
 [Serializable]
 public class Nodo
 {
-    const float MIN_DISTANCE = 0.5F; /// TODO: aumentar
+    public const float MIN_DISTANCE = 0.5F; /// TODO: aumentar
 
     public Vector3 position = Vector3.zero;
     public float cost       = 0;
@@ -33,9 +33,9 @@ public class Nodo
     /// </summary>
     /// <param name="goal"></param>
     /// <returns></returns>
-    public bool EsIgual(Vector3 goal)
+    public bool EsIgual(Vector3 goal, float minDistance = MIN_DISTANCE)
     {
-        if (Vector3.Distance(position, goal) < MIN_DISTANCE)//TODO: distance
+        if (Vector3.Distance(position, goal) < minDistance)//TODO: distance
         {
             return true;
         }
@@ -58,9 +58,12 @@ public class Nodo
 
 public class Pathfinding : MonoBehaviour {
 
+    [SerializeField]
+    float cost = 0.7f;
+
     Vector3 destination         = Vector3.zero;
-    public List<Nodo> frontiers = new List<Nodo>();
-           List<Nodo> path      = new List<Nodo>();
+    List<Nodo> frontiers = new List<Nodo>();
+    public List<Nodo> path      = new List<Nodo>();
 
     GameObject virtualAgent;
 
@@ -76,14 +79,17 @@ public class Pathfinding : MonoBehaviour {
 		
 	}
 
-    public List<Nodo> CalcularRuta(Vector3 initialPosition, Vector3 goal)
+    public List<Nodo> CalcularRuta(Vector3 initialPosition, Vector3 goal, Action callBack)
     {
-        StartCoroutine(Test(initialPosition, goal));
+        frontiers.Clear();
+        
+        StartCoroutine(Calculate(initialPosition, goal, callBack));
 
         return null;
     }
 
-    IEnumerator Test(Vector3 initialPosition, Vector3 goal)
+    //Como el calculo de ruta se realiza en una corrutina, la ruta calculada la devolvemos mediante CallBack
+    IEnumerator Calculate(Vector3 initialPosition, Vector3 goal, Action callBack)
     {
         /// Inicializamos la posición inicial a la posición del agente 
         virtualAgent.transform.position = initialPosition;
@@ -105,15 +111,17 @@ public class Pathfinding : MonoBehaviour {
 
             //Agente para debug
             virtualAgent.transform.position = nodo.position;
-
-            /// Comprobamos si es nodo META!!
-            if (nodo.EsIgual(destination))
-            {
-                Debug.Log("Hemos llegado!");
-                //Devolvemos la lista de los padres que forman la ruta. 
-                //return RecorrerPadres(nodo);
-            }
+  
+            //La ruta hecha hasta ahora.
             path = RecorrerPadres(nodo);
+
+            /// Comprobamos si es nodo META!! 3m
+            if (nodo.EsIgual(destination, 3))
+            {
+                //Devolvemos la lista de los padres que forman la ruta. 
+                callBack();
+                break;
+            }
 
             /// Buscamos las nuevas fronteras del nodo actual
             /// 
@@ -121,7 +129,7 @@ public class Pathfinding : MonoBehaviour {
 
             Debug.Log("Nodos: " + frontiers.Count);
 
-            Debug.Break();
+          //  Debug.Break();
 
             yield return null;
         }
@@ -180,10 +188,10 @@ public class Pathfinding : MonoBehaviour {
 
         if (Physics.Raycast(currentNodo.position + (Vector3.up * 1f), direction, out hit))
         {
-            if (hit.collider.tag == "Ground")
+            if (hit.collider.tag == "Ground" || hit.collider.tag == "Player")
             {
                 //Creamos cada uno de los 8 posibles nodos de dirección
-                Nodo nodo = new Nodo(hit.point, currentNodo.cost + 1, Vector3.Distance(hit.point, destination), currentNodo);
+                Nodo nodo = new Nodo(hit.point, currentNodo.cost + cost, Vector3.Distance(hit.point, destination), currentNodo);
 
                 ///TODO:
                 ///1) Aumentar la distancia de llegada y comprobar si se lanza el log de "llegado!"
@@ -192,7 +200,7 @@ public class Pathfinding : MonoBehaviour {
                 ///4) sustituir el sistema antiguo por este. 
                 
                 /// Si el nodo actual es el primerono o el nuevo nodo es distinto al nodo padre, lo añadimos como nuevo camino posible
-                if (currentNodo.padre == null || !nodo.EsIgual(currentNodo.padre.position))
+                if (currentNodo.padre == null || !nodo.EsIgual(currentNodo.padre.position) && IsValidNode(nodo))
                 {
                     frontiers.Add(nodo);
                 }
@@ -238,6 +246,37 @@ public class Pathfinding : MonoBehaviour {
         comeFrom.Reverse();
 
         return comeFrom;
+    }
+
+    public bool IsValidNode(Nodo nodo)
+    {
+        foreach (Nodo n in frontiers)
+        {
+            if (n.EsIgual(nodo.position))
+                return false;               
+        }
+
+        foreach (Nodo p in path)
+        {
+            if (p.EsIgual(nodo.position))
+                return false;
+        }
+
+        return true;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.blue;
+        foreach (Nodo n in frontiers)
+        {
+            Gizmos.DrawWireCube(n.position, Vector3.one * 0.5f);
+        }
+        Gizmos.color = Color.white;
+        foreach (Nodo n in path)
+        {
+            Gizmos.DrawWireCube(n.position, Vector3.one * 0.5f);
+        }
     }
 }
 

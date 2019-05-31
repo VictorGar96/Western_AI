@@ -60,7 +60,6 @@ public class CowboyDecider : MonoBehaviour {
     //float playerH;
     //float playerMaxH;
 
-    Pathfinding path;
     
     #endregion
 
@@ -73,14 +72,18 @@ public class CowboyDecider : MonoBehaviour {
     {
         //animator     = GetComponentInParent<Animator>();
         locomotion   = GetComponent<CowboyLocomotion>();
-        myTransform  = GetComponent<Transform       >();
+        myTransform  =  GetComponent<Transform       >();
         cowboyAttack = GetComponent<CowboyAttack    >();
-        path         = GetComponent<Pathfinding     >();
 
         //playerH    = gameObject.GetComponent<Health>().getCurrentHealth();
         //playerMaxH = gameObject.GetComponent<Health>().maxHealth;
 
-        path.CalcularRuta(transform.position, target.position);
+
+    }
+
+    void RecorrerRuta()
+    {
+        Debug.LogWarning("RutaCalculada!");
 
     }
 
@@ -115,6 +118,7 @@ public class CowboyDecider : MonoBehaviour {
             case stateAI.attack:
                 Attack();
                 break;
+
         }
     }
 

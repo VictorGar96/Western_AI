@@ -4,5 +4,6 @@ public enum stateAI
     patrol,
     wander,
     attack,
-    runaway
+    runaway,
+    thinking
 }
