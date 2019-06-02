@@ -10,7 +10,6 @@ public class CowboyAttack : MonoBehaviour {
     /// Distancia a la que comenzamos a atacar al enemigo
     /// </summary>
     public float attackDistance = 2;
-
     public float attackDamage   = 5;
 
     /// <summary>

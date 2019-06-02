@@ -5,41 +5,56 @@ using UnityEngine.AI;
 
 public class CowboyLocomotion : MonoBehaviour
 {
+    #region
 
+    /// <summary>
+    /// Varibles
+    /// </summary>
     private NavMeshAgent _navAgent;
     private Transform myTransform = null;
-    //public float rotVel = 90f;
+    public float rotVel = 90f;
     public float movVel = 20f;
 
+    /// <summary>
+    /// Lista de tipo nodo
+    /// </summary>
     List<Nodo> path;
 
+    /// <summary>
+    /// Variables booleanas por las cuales comprobamos si nos estamos moviendo y si estamos calculando una ruta
+    /// </summary>
     bool moving;
     bool calculandoRuta;
 
+    /// <summary>
+    /// posición de los nodos a recorrer por enemy
+    /// </summary>
     int indexNode;
 
+    /// <summary>
+    /// Referencia al script Pathfinder
+    /// </summary>
     Pathfinding pathFinder;
 
     int i = 0;
 
     public DebugCover[] patrolPoints;
- 
+
+    #endregion
     void Awake()
     {
-        _navAgent    = GetComponentInParent<NavMeshAgent>();
-        myTransform  = transform.parent.GetComponent<Transform>();
-        patrolPoints = FindObjectsOfType<DebugCover>();
-        pathFinder = GetComponent<Pathfinding>();
+        _navAgent    = GetComponentInParent         <NavMeshAgent>();
+        myTransform  = transform.parent.GetComponent<Transform   >();
+        patrolPoints = FindObjectsOfType            <DebugCover  >();
+        pathFinder   = GetComponent                 <Pathfinding >();
 
         //_navAgent.stoppingDistance = GetComponent<CowboyAttack>().attackDistance;
-        //_navAgent.angularSpeed = rotVel;
+        _navAgent.angularSpeed = rotVel;
     }
 
     void Update()
     {
-
-
-       if (moving)
+        if (moving)
         {
             //if (nohemosllegado al ultimo punto de la ruta)
             myTransform.position = Vector3.MoveTowards(myTransform.position, path[indexNode].position, movVel * Time.deltaTime);
@@ -54,7 +69,6 @@ public class CowboyLocomotion : MonoBehaviour
                 //Si llegamos al ultimo nodo, es que estamos en el destino
                 if (path.Count == indexNode)
                     moving = false;
-                
             }
         }
     }
@@ -63,24 +77,21 @@ public class CowboyLocomotion : MonoBehaviour
     {
         if (!calculandoRuta)
         {
-            pathFinder.CalcularRuta(myTransform.position, target.position, Comenar);
+            pathFinder.CalcularRuta(myTransform.position, target.position, Comenzar);
             calculandoRuta = true;
         }
 
         //Old System
         //_navAgent.destination = target.position;
-
-        
-        
     }
 
     //Cuando la ruta está calculada comienza el movimiento
-    void Comenar ()
+    void Comenzar()
     {
-        moving = true;
+        moving         = true;
         calculandoRuta = false;
-        indexNode = 0;
-        path = pathFinder.path;
+        indexNode      = 0;
+        path           = pathFinder.path;
 
     }
 
@@ -94,32 +105,4 @@ public class CowboyLocomotion : MonoBehaviour
             MoveTo(patrolPoints[rand].transform);
         }
     }
-
-    //public IEnumerator CoversPath(DebugCover[] covers)
-    //{
-    //    Transform playerenemy = transform;
-    //    do
-    //    {
-    //        MoveTo(covers[i].transform);
-
-    //        //Hemos llegado al punto de patruya
-    //        if (Vector3.Distance(myTransform.position, covers[i].transform.position) < 1)
-    //        {
-    //            yield return new WaitForSeconds(2);
-    //            i++;
-    //        }
-    //    } while (i < covers.Length);
-
-    //}
-
-    ////Activamos la corrutina con un método público para llamarla desde CowboyDecider
-    //public void StartC()
-    //{
-    //    StartCoroutine(CoversPath(patrolPoints));
-    //}
-
-    //public void StopC()
-    //{
-    //    StopCoroutine(CoversPath(patrolPoints));
-    //}
 }

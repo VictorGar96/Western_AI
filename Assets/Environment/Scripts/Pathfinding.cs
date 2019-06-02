@@ -7,6 +7,7 @@ using System.Linq;
 [Serializable]
 public class Nodo
 {
+    #region Inicialización de términos
     public const float MIN_DISTANCE = 0.5F; /// TODO: aumentar
 
     public Vector3 position = Vector3.zero;
@@ -19,6 +20,8 @@ public class Nodo
     }
 
     public Nodo padre;
+
+    #endregion
 
     public Nodo(Vector3 p_position, float p_cost, float p_distance, Nodo p_padre)
     {
@@ -41,19 +44,6 @@ public class Nodo
         }
         return false;
     }
-
-    /// <summary>
-    ///  Calcular el coste mediante la posición actual y el goal 
-    /// </summary>
-    /// <param name="_distance"></param>
-    /// <returns></returns>
-    public float FStar(float _distance)
-    {
-        var hStar = distance;
-
-        return cost + hStar;
-        
-    }
 }
 
 public class Pathfinding : MonoBehaviour {
@@ -62,7 +52,7 @@ public class Pathfinding : MonoBehaviour {
     float cost = 0.7f;
 
     Vector3 destination         = Vector3.zero;
-    List<Nodo> frontiers = new List<Nodo>();
+           List<Nodo> frontiers = new List<Nodo>();
     public List<Nodo> path      = new List<Nodo>();
 
     GameObject virtualAgent;
@@ -124,7 +114,6 @@ public class Pathfinding : MonoBehaviour {
             }
 
             /// Buscamos las nuevas fronteras del nodo actual
-            /// 
             GetFrontiers(nodo);
 
             Debug.Log("Nodos: " + frontiers.Count);
@@ -190,15 +179,9 @@ public class Pathfinding : MonoBehaviour {
         {
             if (hit.collider.tag == "Ground" || hit.collider.tag == "Player")
             {
-                //Creamos cada uno de los 8 posibles nodos de dirección
+                /// Creamos cada uno de los 8 posibles nodos de dirección
                 Nodo nodo = new Nodo(hit.point, currentNodo.cost + cost, Vector3.Distance(hit.point, destination), currentNodo);
 
-                ///TODO:
-                ///1) Aumentar la distancia de llegada y comprobar si se lanza el log de "llegado!"
-                ///2) Crear un sistem de comprobación, que solo añada el nodo si no está en frontiers ni en el path
-                ///3) Quitar la corrutina y devolver la ruta 
-                ///4) sustituir el sistema antiguo por este. 
-                
                 /// Si el nodo actual es el primerono o el nuevo nodo es distinto al nodo padre, lo añadimos como nuevo camino posible
                 if (currentNodo.padre == null || !nodo.EsIgual(currentNodo.padre.position) && IsValidNode(nodo))
                 {
@@ -207,24 +190,6 @@ public class Pathfinding : MonoBehaviour {
             }
         }
     }
-
-    /*
-    public void ordInsertar(Nodo n, List<Nodo> a, float coste)
-    {
-
-        //frontiers.OrderBy(nodo => nodo.priority);
-
-        //for (var i = 0; i < frontiers.Count; i++)
-        //{
-        //    if (frontiers[i].priority > coste)
-        //    {
-        //        frontiers.Insert(i, n);
-        //        break;
-        //    }
-        //}
-        //if (frontiers.Count == 0) frontiers.Add(n);
-    }
-    */
 
     /// <summary>
     /// Recorrer los padres para calcular la ruta.
@@ -248,6 +213,12 @@ public class Pathfinding : MonoBehaviour {
         return comeFrom;
     }
 
+    /// <summary>
+    /// Comprobamos que es un nodo váilido comprobando si no es el nodo de destiono o 
+    /// hay otro nodo con la misma posición.
+    /// </summary>
+    /// <param name="nodo"></param>
+    /// <returns></returns>
     public bool IsValidNode(Nodo nodo)
     {
         foreach (Nodo n in frontiers)
@@ -265,6 +236,9 @@ public class Pathfinding : MonoBehaviour {
         return true;
     }
 
+    /// <summary>
+    /// Visualizar las rayos lanzados y los nodos de ambas listas
+    /// </summary>
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.blue;

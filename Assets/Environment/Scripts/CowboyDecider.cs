@@ -72,7 +72,7 @@ public class CowboyDecider : MonoBehaviour {
     {
         //animator     = GetComponentInParent<Animator>();
         locomotion   = GetComponent<CowboyLocomotion>();
-        myTransform  =  GetComponent<Transform       >();
+        myTransform  = GetComponent<Transform       >();
         cowboyAttack = GetComponent<CowboyAttack    >();
 
         //playerH    = gameObject.GetComponent<Health>().getCurrentHealth();
@@ -84,7 +84,6 @@ public class CowboyDecider : MonoBehaviour {
     void RecorrerRuta()
     {
         Debug.LogWarning("RutaCalculada!");
-
     }
 
     private void Update()
