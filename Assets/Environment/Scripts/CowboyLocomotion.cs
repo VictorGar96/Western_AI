@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 public class CowboyLocomotion : MonoBehaviour
 {
-    #region
+    #region Inicialización de términos
 
     /// <summary>
     /// Varibles
@@ -23,7 +23,7 @@ public class CowboyLocomotion : MonoBehaviour
     /// <summary>
     /// Variables booleanas por las cuales comprobamos si nos estamos moviendo y si estamos calculando una ruta
     /// </summary>
-    bool moving;
+    public bool moving;
     bool calculandoRuta;
 
     /// <summary>
@@ -41,6 +41,7 @@ public class CowboyLocomotion : MonoBehaviour
     public DebugCover[] patrolPoints;
 
     #endregion
+
     void Awake()
     {
         _navAgent    = GetComponentInParent         <NavMeshAgent>();
@@ -61,7 +62,7 @@ public class CowboyLocomotion : MonoBehaviour
 
             //Mira siempre hacia el destino
             myTransform.LookAt(path[indexNode].position);
-            //Si hemos llegado al nodo siguiente, 
+            //Si hemos llegado al siguiente nodo, 
             if (Vector3.Distance(myTransform.position, path[indexNode].position) < 0.1f)
             {
                 indexNode++;
@@ -73,6 +74,10 @@ public class CowboyLocomotion : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Método que dado un target se mueve hasta ese target
+    /// </summary>
+    /// <param name="target"></param>
     public void MoveTo(Transform target)
     {
         if (!calculandoRuta)
@@ -90,11 +95,39 @@ public class CowboyLocomotion : MonoBehaviour
     {
         moving         = true;
         calculandoRuta = false;
-        indexNode      = 0;
         path           = pathFinder.path;
+        indexNode      = NearetNode();
 
     }
 
+    /// <summary>
+    /// Reseteamos los valores para volver a calcular la ruta
+    /// </summary>
+    public void ResetPath()
+    {
+        moving = false;
+        calculandoRuta = false;
+    }
+
+    /// <summary>
+    /// Partimos del nodo más cercanos cuando recalculamos la ruta
+    /// Esto está implmentado para mejorar el algoritmo cuando un enemigo ha detectado al player y se mueve hacia él
+    /// </summary>
+    /// <returns></returns>
+    private int NearetNode()
+    {
+        for(int i = 0; i < path.Count; i++)
+        {
+            if(Vector3.Distance(path[i].position, myTransform.position) < 1f)
+                return i;
+        }
+        return 0;
+    }
+
+    /// <summary>
+    /// Mover al enemigo a una cover random cada vez
+    /// </summary>
+    /// <param name="reset"></param>
     public void MoveToRandomCover(bool reset = false)
     {
         //Si no nos estamos moviendo, llamamomos al MoveTo hacia una rando cover.

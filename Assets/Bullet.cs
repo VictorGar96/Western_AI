@@ -5,19 +5,23 @@ using UnityEngine;
 public class Bullet : MonoBehaviour {
 
 	// Use this for initialization
-	void OnEnable () {
+	void OnEnable ()
+    {
 		
-        //TODO: la lifetimedeberían ser Serializadas
         Invoke("DestroyMe", 3);
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
         //TODO: la speed deberían ser Serializadas
         transform.Translate(transform.forward * 10 * Time.deltaTime);
-
     }
 
+    /// <summary>
+    /// Desactivamos la bala cuando OnCollisionEnter
+    /// </summary>
+    /// <param name="collision"></param>
     private void OnCollisionEnter(Collision collision)
     {
         Health h = collision.gameObject.GetComponent<Health>();
@@ -35,7 +39,7 @@ public class Bullet : MonoBehaviour {
         DestroyMe();
     }
 
-    //COn Pool, desactivamos el objeto y lo añadimos al pool, para poder ser reutilizado
+    //Con Pool, desactivamos el objeto y lo añadimos al pool, para poder ser reutilizado
     void DestroyMe()
     {
         gameObject.SetActive(false);

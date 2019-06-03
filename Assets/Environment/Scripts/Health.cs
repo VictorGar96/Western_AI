@@ -27,12 +27,21 @@ public class Health : MonoBehaviour {
     /// </summary>
     GameObject player;
 
+    /// <summary>
+    /// Barra de vida
+    /// </summary>
     [SerializeField]
     float dumpingLifebar = 55f;
 
+    /// <summary>
+    /// Sound effects
+    /// </summary>
     public AudioSource takeDamage;
     public AudioSource lowHealthSound;
 
+    /// <summary>
+    /// Sistema de partículas para visualizar la sangre
+    /// </summary>
     public GameObject bloodParticle;
     #endregion
 
@@ -48,12 +57,13 @@ public class Health : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
+        /// Bajar la barra de vida pregresivamente
         healthBar.value = Mathf.Lerp(healthBar.value,  currentHealth, Time.time * dumpingLifebar);
     }
 
 
     /// <summary>
-    /// Función para recibir daño cada 2 segundos.
+    /// Función para recibir daño cada chace segundos.
     /// </summary>
     /// <param name="damage"></param>
     /// Probabilidad de acierto
@@ -61,15 +71,12 @@ public class Health : MonoBehaviour {
     /// <returns></returns>
     public bool TakeDamage(float damage, int chance)
     {
-        /// Random para recibir daño por parte del enemigo
+        /// Random para recibir daño o no por parte del enemigo
         int r = UnityEngine.Random.Range(0, 10);
 
+        /// Forma de falsear que los enemigos a veces fallan cuando disparan
         if (r <= chance)
         {
-            /// TODO: añadir sonido de daño recibido.
-            /// Paricle System rojo (gotas de sangre).
-            //Debug.Log(currentHealth);
-
             currentHealth -= damage;
 
             if(takeDamage != null)
@@ -104,6 +111,9 @@ public class Health : MonoBehaviour {
         return true;
     }
 
+    /// <summary>
+    /// Regeneración de vida a lo largo de tiempo
+    /// </summary>
     void UpdateHealth()
     {
         if (currentHealth < maxHealth)

@@ -4,28 +4,38 @@ using UnityEngine;
 
 public class Shot : MonoBehaviour
 {
+    #region Inicialización de términos
+
+    /// <summary>
+    /// Objeto a instanciar
+    /// </summary>
     public GameObject bullet;
 
+    /// <summary>
+    /// Posición donde se instancia el objeto
+    /// </summary>
     public Transform spawnPoint;
 
-    //POOL!
+    /// <summary>
+    /// POOL!
+    /// </summary>
     public static List<GameObject> bulletPool = new List<GameObject>();
 
-    // Use this for initialization
-	void Start ()
+    #endregion
+
+    // Update is called once per frame
+    void Update ()
     {
-	
-	}
-	
-	// Update is called once per frame
-	void Update ()
-    {
+        /// Cuando pulsamos el botón derecho del ratón disparamos
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             DoShoot();
         }
 	}
 
+    /// <summary>
+    /// Función que hace un pool de balas para disparar, de esta manera mejorarmos el rendimiento
+    /// </summary>
     void DoShoot()
     {
         //SI hay algún elemnto en el pool, lo usamos, si no creamos uno nuevo, que al ser 'destruido' se desactivará y alñadirá a la lista (en Bullet.cs)

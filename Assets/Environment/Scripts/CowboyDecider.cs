@@ -70,22 +70,22 @@ public class CowboyDecider : MonoBehaviour {
 
     private void Start()
     {
-        //animator     = GetComponentInParent<Animator>();
         locomotion   = GetComponent<CowboyLocomotion>();
         myTransform  = GetComponent<Transform       >();
         cowboyAttack = GetComponent<CowboyAttack    >();
-
-        //playerH    = gameObject.GetComponent<Health>().getCurrentHealth();
-        //playerMaxH = gameObject.GetComponent<Health>().maxHealth;
-
-
     }
 
+    /// <summary>
+    /// Log que indica cuando hemos calculado una ruta
+    /// </summary>
     void RecorrerRuta()
     {
         Debug.LogWarning("RutaCalculada!");
     }
 
+    /// <summary>
+    /// Llamamos a la función Decide()
+    /// </summary>
     private void Update()
     {
         // Llamamos a la función Decide();
@@ -93,9 +93,6 @@ public class CowboyDecider : MonoBehaviour {
 
         /// Obtenemos la distancia al jugador para comprobar si esta en rango de tiro.
         distanceToPlayer = Vector3.Distance(target.position, myTransform.position);
-
-        //playerHealth.healthBar.fillAmount = playerMaxH / playerH;
-        //Debug.Log(playerH);
     }
 
     /// <summary>
@@ -117,7 +114,6 @@ public class CowboyDecider : MonoBehaviour {
             case stateAI.attack:
                 Attack();
                 break;
-
         }
     }
 
@@ -129,12 +125,15 @@ public class CowboyDecider : MonoBehaviour {
     {
         string tag;
         //Player Detected!
+        //Si elplayer está en elángulo de visión
         if (VisionAngle(out tag) < visionAngle && tag == "Player")
         {
             Debug.Log("PLayer Detected! Wander");
             currentState = stateAI.wander;
+
+            locomotion.ResetPath();
         }
-       
+
         else
         {
            // Debug.Log("Did not hit");
@@ -142,11 +141,14 @@ public class CowboyDecider : MonoBehaviour {
         }
     }
 
-
+    /// <summary>
+    /// Persiguiendo al player
+    /// </summary>
     void Wander()
     {
         string tag;
 
+        //Calculamos la ruta hasta el player e iniciamos el movimiento.
         locomotion.MoveTo(target);
 
         //Distancia de ataque
@@ -167,12 +169,15 @@ public class CowboyDecider : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Atacando al player
+    /// </summary>
     void Attack()
     {
         string tag;
 
-        //Solución para que nose mueva mientrass ataca
-        locomotion.MoveTo(transform);
+        //Para que nose mueva mientrass ataca
+        locomotion.moving = false;
 
         //Stop Attacking
         if (distanceToPlayer > cowboyAttack.attackDistance || VisionAngle(out tag) > visionAngle)
@@ -184,11 +189,13 @@ public class CowboyDecider : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Rango de visión de los enemigos
+    /// </summary>
+    /// <param name="tag"></param>
+    /// <returns></returns>
     float VisionAngle(out string tag)
     {
-        // Forma de averiguar la DISTANCIA a un objeto
-        // float distToPlayer = Vector3.Distance(target.position, myTransform.position);
-
         //Lanzamos un raycast hacia el player y si le immpactamos comprobamos que esté en nuestro área de visión
         RaycastHit hit;
 
@@ -206,8 +213,8 @@ public class CowboyDecider : MonoBehaviour {
         {
             tag = "";
         }
-
-
+        
+        /// Retornamos el ángulo
         return angle;
     }
 

@@ -6,6 +6,7 @@ using UnityEngine;
 [RequireComponent (typeof(CowboyDecider))]
 public class CowboyAttack : MonoBehaviour {
 
+    #region Inicialización de términos
     /// <summary>
     /// Distancia a la que comenzamos a atacar al enemigo
     /// </summary>
@@ -13,11 +14,14 @@ public class CowboyAttack : MonoBehaviour {
     public float attackDamage   = 5;
 
     /// <summary>
-    /// Probabilidad de acierto
+    /// Probabilidad de acierto al atacar
     /// </summary>
     [Range(0f, 10f)]
     public int chance = 1;
 
+    /// <summary>
+    /// Cadencia de disparo de los enemigos
+    /// </summary>
     [SerializeField]
     float cadency = 0f;
 
@@ -27,9 +31,17 @@ public class CowboyAttack : MonoBehaviour {
     [SerializeField]
     Health playerHealth;
 
+    /// <summary>
+    /// Referencia al script CowboyDecider
+    /// </summary>
     CowboyDecider decider = null;
 
+    /// <summary>
+    /// Sound effect
+    /// </summary>
     private AudioSource fireSound;
+
+    #endregion
 
     // Use this for initialization
     void Start ()
@@ -44,11 +56,20 @@ public class CowboyAttack : MonoBehaviour {
 
 	}
 
+    /// <summary>
+    /// Función para atacar al player
+    /// Retornamos una llamada al método TakeDamage del script playerHealth
+    /// </summary>
+    /// <returns></returns>
     public bool DoAttack()
     {
         return playerHealth.TakeDamage(attackDamage, chance);        
     }
 
+    /// <summary>
+    /// Corrutina para atacar con una cadencia específica
+    /// </summary>
+    /// <returns></returns>
     public IEnumerator Attacking()
     {
         //Mientras el player esté vivo le atacamos.
@@ -62,6 +83,9 @@ public class CowboyAttack : MonoBehaviour {
         decider.currentState = stateAI.patrol;
     }
 
+    /// <summary>
+    /// Visualizar distancia de ataque
+    /// </summary>
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;

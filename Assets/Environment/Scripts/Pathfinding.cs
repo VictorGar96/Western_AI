@@ -23,6 +23,13 @@ public class Nodo
 
     #endregion
 
+    /// <summary>
+    /// Constructor de la clase Nodo
+    /// </summary>
+    /// <param name="p_position"></param>
+    /// <param name="p_cost"></param>
+    /// <param name="p_distance"></param>
+    /// <param name="p_padre"></param>
     public Nodo(Vector3 p_position, float p_cost, float p_distance, Nodo p_padre)
     {
         this.position = p_position;
@@ -48,27 +55,33 @@ public class Nodo
 
 public class Pathfinding : MonoBehaviour {
 
+    #region Inicialización de métodos
     [SerializeField]
     float cost = 0.7f;
 
+    /// <summary>
+    /// Destination, lista de fronteras y lista que contendrá el camino a seguir
+    /// </summary>
     Vector3 destination         = Vector3.zero;
            List<Nodo> frontiers = new List<Nodo>();
     public List<Nodo> path      = new List<Nodo>();
 
     GameObject virtualAgent;
 
+    #endregion
     // Use this for initialization
     void Start ()
     {
         virtualAgent = GameObject.CreatePrimitive(PrimitiveType.Sphere);
     }
 	
-	// Update is called once per frame
-	void Update ()
-    {
-		
-	}
-
+    /// <summary>
+    /// Método que llamaremos en el Script CowboyLocomotion para calcular la ruta y mover a los enemies
+    /// </summary>
+    /// <param name="initialPosition"></param>
+    /// <param name="goal"></param>
+    /// <param name="callBack"></param>
+    /// <returns></returns>
     public List<Nodo> CalcularRuta(Vector3 initialPosition, Vector3 goal, Action callBack)
     {
         frontiers.Clear();
@@ -78,7 +91,7 @@ public class Pathfinding : MonoBehaviour {
         return null;
     }
 
-    //Como el calculo de ruta se realiza en una corrutina, la ruta calculada la devolvemos mediante CallBack
+    /// Como el calculo de ruta se realiza en una corrutina, la ruta calculada la devolvemos mediante CallBack
     IEnumerator Calculate(Vector3 initialPosition, Vector3 goal, Action callBack)
     {
         /// Inicializamos la posición inicial a la posición del agente 
@@ -125,6 +138,10 @@ public class Pathfinding : MonoBehaviour {
         yield return null;
     }
 
+    /// <summary>
+    /// Lanzamos un rayo en 8 direcciones
+    /// </summary>
+    /// <param name="current"></param>
     private void GetFrontiers(Nodo current)
     {
         /// North node
@@ -162,7 +179,6 @@ public class Pathfinding : MonoBehaviour {
         /// Ordenamos la lista por su priority (coste + distancia)
         frontiers = frontiers.OrderBy(nodo => nodo.priority).ToList();
     }
-
 
     /// <summary>
     /// Lanza los rayos y si chocan con el suelo los añade a la lista frontiers
@@ -251,6 +267,9 @@ public class Pathfinding : MonoBehaviour {
         {
             Gizmos.DrawWireCube(n.position, Vector3.one * 0.5f);
         }
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(destination, 1f);
     }
 }
 

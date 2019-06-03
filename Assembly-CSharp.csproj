@@ -69,7 +69,6 @@
     <Compile Include="Assets\Environment\Scripts\DebugCover.cs" />
     <Compile Include="Assets\Environment\Scripts\Enums.cs" />
     <Compile Include="Assets\Environment\Scripts\Health.cs" />
-    <Compile Include="Assets\Environment\Scripts\Node.cs" />
     <Compile Include="Assets\Environment\Scripts\Pathfinding.cs" />
     <Compile Include="Assets\Environment\Scripts\PCLocomotion.cs" />
     <Compile Include="Assets\Environment\Scripts\Shot.cs" />
